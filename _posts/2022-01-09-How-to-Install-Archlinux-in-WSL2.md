@@ -3,8 +3,8 @@ layout: post
 title: How to Install Archlinux in WSL2
 subtitle: With AUR Support
 last-updated: 2022-09-30
-thumbnail-img: /assets/img/posts/How-to-Install-Archlinux-in-WSL2/archlinux.png
-cover-img: /assets/img/posts/How-to-Install-Archlinux-in-WSL2/archlinux.png
+thumbnail-img: /assets/images/posts/How-to-Install-Archlinux-in-WSL2/archlinux.png
+cover-img: /assets/images/posts/How-to-Install-Archlinux-in-WSL2/archlinux.png
 tags: [Arch, Windows, WSL2, Linux]
 text-align: justify
 comments: true
@@ -117,7 +117,7 @@ export EDITOR=vim ; visudo
 
 Uncomment the line containing `%wheel ALL=(ALL) ALL`.
 
-![sudoers](/assets/img/posts/How-to-Install-Archlinux-in-WSL2/uncomment-suders-file.png)
+![sudoers](/assets/images/posts/How-to-Install-Archlinux-in-WSL2/uncomment-suders-file.png)
 
 If you wish to run basic commands that require root permissions without having to enter user password then uncomment the next `%wheel` group.
 
