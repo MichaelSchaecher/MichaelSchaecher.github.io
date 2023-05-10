@@ -1,14 +1,14 @@
 ---
 layout: post
 title: How to Install Archlinux in WSL2
-subtitle: With AUR Support
 author: main_author
 last-updated: 2022-09-30
-images: /assets/images/How-to-Install-Archlinux-in-WSL2/archlinux.png
+image: /assets/images/How-to-Install-Archlinux-in-WSL2/archlinux.png
 tags: [Arch, Windows, WSL2, Linux]
 text-align: justify
+categories: [Linux and WSL2]
 comments: true
-toc: false
+toc: true
 comments: true
 published: true
 ---
