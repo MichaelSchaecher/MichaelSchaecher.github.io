@@ -2,7 +2,7 @@
 layout: post
 title: How to Install Archlinux in WSL2
 author: main_author
-last-updated: 2022-09-30
+#last-updated: 2022-09-30
 image: /assets/images/How-to-Install-Archlinux-in-WSL2/archlinux.png
 categories: [WSL2, Linux]
 tags: [Arch]
