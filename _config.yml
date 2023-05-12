@@ -109,7 +109,7 @@ comments:
 assets:
   self_host:
     enabled: true
-    env: development # [development|production]
+    env: production # [development|production]
 
 pwa:
   enabled: true # the option for PWA feature
