@@ -1,35 +1,22 @@
 ---
 layout: post
-title: How to Install WSL2 for Windows 10/11 and Archlinux
+title: How to Install Archlinux in WSL2
 author: main_author
-date: 2023-05-11
+last-updated: 2022-09-30
 image: /assets/images/How-to-Install-Archlinux-in-WSL2/archlinux.png
 categories: [WSL2, Linux]
 tags: [Arch]
 comments: true
 toc: true
+comments: true
+published: true
 ---
 
-Windows Subsystem for Linux (WSL) allows you to run Linux distributions on Windows, giving you access to a powerful and flexible operating system within the Windows environment. Arch Linux (known for its lightweight and highly customizable nature) is a popular choice among Linux enthusiasts and developers.
+This guide is for anyone that is like me, an **Arch** daily driver user but do to circumstances is suck using **Windows**. Originally this was center on getting _SystemD_ to work inside _WLS2_ while running **Archlinux**, however do to changes made to some packages relating daemons and services _SystemD_ is left degrade. There is news that _WSL2_ by default well support _SystemD_ with some version of **Windows** 10/11. So until then, consider _SystemD_ unsupported.
 
-In this tutorial, your'll be guide you through the process of installing WSL2 on Windows 10/11 and then show you how to install Arch Linux within it. We'll cover everything from enabling the necessary Windows features, updating the Linux kernel, setting up Arch Linux, and configuring the system. By following this guide, you'll be able to use Arch Linux on your Windows machine via WSL2, opening up a world of possibilities for development and customization.
+Most commands can be done in the _shell_ cli alone, but _Windows Terminal_ is a must have for and **Windows** PC as even _WSL_ distro's  can have there own profile. If you have not done so already install the terminal, go [here](https://github.com/microsoft/terminal) to learn how using the _Windows_ packages manager `winget`.
 
-This guide is for anyone that is like me and have no choice but to use Windows has their daily driver. So, let's get started!
-
-## Setting WSL2 and Home User Environment
-
-One of the requirements to installing the ArchLinux CLI is having the environment setup according and not sticking with the install defaults for WSL.
-
-Setting the Windows environment for WSL involves enabling the Windows Subsystem for Linux (WSL) feature, installing a Linux distribution of your choice, and setting up a terminal application to interact with the Linux environment. This can be done easily through the Windows settings, Microsoft Store, and package managers such as Chocolatey or Winget. Once set up, you can use the Linux environment on your Windows machine to run Linux commands and applications, giving you access to a powerful and flexible operating system within the Windows environment.
-
-### Some Requirements To Keep In Mind
-
-If you plan on installing WSL for each user account they needs to have administrator privileges on the Windows machine. The administrator can enable the Windows Subsystem for Linux (WSL) feature through the Windows settings, and then each user account can install a Linux distribution of their choice from the Microsoft Store or by manually importing a distribution image. Each user account can also set up their own terminal application to interact with their WSL environment.
-
-Each user account's WSL environment can be managed independently, including updating, installing, or removing Linux distributions, and configuring WSL settings. Each user account's WSL environment will have its own file system and home directory, separate from other user accounts on the same machine.
-
-### Picking a Location
-
+## Getting Environment Read
 
 The default install location is to place the distro where [Windows Store](https://apps.microsoft.com/store/apps) gets installed. This is because the distro's are infact store apps. The downside to installing this way is that yet another terminal installed. The way around this is to import the distro into _WSL_.
 
@@ -39,7 +26,7 @@ Thankfully there is no default install location for imported distributions, mean
 
 From the _shell_ profile of _Windows Terminal_ move to the home directory with `cd $HOME`.
 
-```powershell
+```shell
 Invoke-WebRequest -Uri "https://github.com/MichaelSchaecher/MichaelSchaecher.github.io/releases/download/Archlinux-x86_64/Archlinux-Bootstrap-x86_64.tar.gz" -OutFile "$HOME\Downloads\archlinux-x86_64.tar.gz"
 ```
 
@@ -47,15 +34,22 @@ Please note that you can pick where the file is Downloads to and what to name th
 
 Create the root install folder and general directory structure for all _WSL_ imported distributions with `md "wsl"`.
 
-```powershell
+```shell
 'kernel', 'distributions\arch', 'distributions\ubuntu', '.backup' | % {New-Item -Name "wsl\$_" -ItemType 'Directory'}
+```
+
+If you gone the route of setting up a .backup it maybe a good idea to make it hidden.
+
+```shell
+$f=get-item $HOME\wsl\.backup -Force
+$f.attributes="Hidden"
 ```
 
 Just note that _WSL_ well only allow each user with permissions to have their own running account. This means that multi-user login pre installed distribution well not work.
 
 Lately import to **Arch** tarball into _WSL_.
 
-```powershell
+```shell
 wsl --import Arch "$HOME\WSL\Arch" "$HOME\Downloads\arch_linux-x86_64.tar.gz"
 ```
 
@@ -65,17 +59,17 @@ Once that **Arch** is installed run `wls -d Arch`, you well be greeted with the 
 
 In some cases you well see network problems until the ping command is set. Though this should be rare, it is nice to be able to troubleshut network problems with a simple ping.
 
-```bash
+```shell
 setcap 'cap_net_raw+p' /bin/ping
 ```
 
 From here the fun can begin, starting with getting _pacman_ to function properely and enable multilib for development.
 
-```bash
+```shell
 sed -i 's:#Server:Server:g' /etc/pacman.d/mirrorlist
 ```
 
-```bash
+```shell
 linenumber=$(grep -nr "\\#\\[multilib\\]" /etc/pacman.conf | gawk '{print $1}' FS=":")
 sed -i "${linenumber}s:.*:[multilib]:" /etc/pacman.conf
 linenumber=$((linenumber+1))
@@ -84,7 +78,7 @@ sed -i "${linenumber}s:.*:Include = /etc/pacman.d/mirrorlist:" /etc/pacman.conf
 
 Populate the keyring.
 
-```bash
+```shell
 pacman-key --init && pacman-key --populate
 ```
 
@@ -92,19 +86,19 @@ If you try to update without populating to keyring first you well get permission
 
 Once the keyrings are populated **Arch** can be updated. This needs to be done before setting you user account and installing additional packages.
 
-```bash
+```shell
 pacman -Syu --noconfirm
 ```
 
 Now install the additional packages.
 
-```bash
+```shell
 pacman -S --noconfirm base-devel git vim nano wget reflector sudo which go openssh man-db shell-completion fontconfig
 ```
 
 Configure _pacman_ to use only the most current and best connection mirror.
 
-```bash
+```shell
 reflector --country "United States" --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
@@ -112,7 +106,7 @@ reflector --country "United States" --age 12 --protocol https --sort rate --save
 
 Setting up a user account is similar to installing **Arch** on bare-metal. The first thing to do is editing the `/etc/sudoers` file to enable running some basic commands that required root permissions.
 
-```bash
+```shell
 export EDITOR=nano ; visudo
 ```
 
@@ -130,7 +124,7 @@ If you wish to run basic commands that require root permissions without having t
 
 Now that _sudo_ is setup it is time to set the default user account that will be singed into when logging into **Arch**.
 
-```bash
+```shell
 useradd -m -G wheel -s /bin/bash -d /home/username username ; passwd username
 ```
 
@@ -155,9 +149,6 @@ appendWindowsPath = true
 
 [user]
 default = username
-
-[boot]
-systemd = true
 ```
 
 Just remember to use the account name that your setup earlier.
@@ -174,7 +165,7 @@ The best part and sometimes problem with **Arch** is the AUR (Arch User Reposito
 
 From the user home directory run.
 
-```bash
+```shell
 git clone https://github.com/Jguer/yay.git
 cd yay
 makepkg -si
